@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استبيان تقييم جودة الخدمة - مستشفى شرق جدة</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo & Tajawal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#155084',       /* الأزرق الداكن لتجمع جدة الصحي الأول */
+                        secondary: '#1194D2',     /* الأزرق النابض بالحياة */
+                        brandGray: '#A09EA4',     /* رمادي الهوية الأساسي */
+                        brandLight: '#F3F7FA',    /* خلفية زرقاء فاتحة مريحة */
+                        patientGreen: '#1E7D56',  /* أخضر شعار تجربة المريض */
+                        patientGold: '#B39255'    /* ذهبي شعار تجربة المريض */
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'Tajawal', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background-color: #f7fafc;
+            background-image: radial-gradient(#1194d212 1px, transparent 0), radial-gradient(#1194d212 1px, transparent 0);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+        }
+        /* Custom smooth step transitions */
+        .step-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+        .step-content.active {
+            display: block;
+            opacity: 1;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #155084;
+            border-radius: 10px;
+        }
+        /* Card active state glow */
+        .card-radio:checked + .card-label {
+            border-color: #1194D2;
+            background-color: #f0f9ff;
+            box-shadow: 0 4px 15px rgba(17, 148, 210, 0.15);
+        }
+    </style>
+    <script>
+        // Fallback displays if images are not uploaded on GitHub yet
+        // Defined here in <head> so they exist immediately when <img> onerror fires during parsing
+        function showHospitalFallback() {
+            const img = document.getElementById('hospital-logo-img');
+            const fallback = document.getElementById('hospital-logo-fallback');
+            if (img) img.classList.add('hidden');
+            if (fallback) fallback.classList.remove('hidden');
+        }
+
+        function showPxFallback() {
+            const img = document.getElementById('px-logo-img');
+            const fallback = document.getElementById('px-logo-fallback');
+            if (img) img.classList.add('hidden');
+            if (fallback) fallback.classList.remove('hidden');
+        }
+    </script>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-gray-800 antialiased overflow-x-hidden">
+
+    <!-- Canvas for Confetti Success Animation -->
+    <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50 hidden"></canvas>
+
+    <!-- Top Accent Bar -->
+    <div class="h-2 w-full bg-gradient-to-r from-primary via-secondary to-patientGold"></div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="container mx-auto px-4 py-6 max-w-4xl flex-grow flex flex-col justify-center">
+        
+        <!-- HEADER WITH OFFICIAL LOGOS -->
+        <header class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <!-- Cluster & Hospital Logo (Uploaded Image with Elegant Fallback) -->
+                <div class="flex items-center gap-4">
+                    <div class="bg-white p-1 rounded-xl flex items-center justify-center max-w-[210px] md:max-w-[250px]">
+                        <img id="hospital-logo-img" src="شعار المستشفى بخلفية شفافة-٢.PNG" alt="شعار مستشفى شرق جدة" class="w-full h-auto object-contain" onerror="showHospitalFallback()">
+                        <!-- Elegant Custom HTML/CSS Fallback to prevent layout break if image not uploaded yet -->
+                        <div id="hospital-logo-fallback" class="hidden flex items-center gap-3">
+                            <div class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-sm">J1</div>
+                            <div>
+                                <h1 class="text-sm md:text-base font-extrabold text-primary leading-tight">تجمع جدة الصحي الأول</h1>
+                                <h2 class="text-xs md:text-sm font-bold text-secondary">مستشفى شرق جدة</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient Experience Logo (Uploaded Image with Elegant Fallback) -->
+                <div class="flex items-center gap-3 border-r-0 md:border-r md:border-gray-200 md:pr-6">
+                    <div class="text-left md:text-right">
+                        <h3 class="text-sm md:text-base font-extrabold text-patientGreen leading-snug">إدارة تجربة المريض</h3>
+                        <p class="text-xs font-semibold text-patientGold">Patient Experience Department</p>
+                    </div>
+                    <div class="bg-white p-1 rounded-xl flex items-center justify-center w-16 h-16 md:w-20 md:h-20 border border-gray-100 shadow-sm overflow-hidden">
+                        <img id="px-logo-img" src="تجربة المريض.jpg" alt="شعار تجربة المريض" class="w-full h-full object-contain rounded-lg" onerror="showPxFallback()">
+                        <!-- Elegant Custom Icon Fallback -->
+                        <div id="px-logo-fallback" class="hidden w-full h-full bg-emerald-50 text-patientGreen flex items-center justify-center rounded-lg">
+                            <i class="fa-solid fa-heart-pulse text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Intro text -->
+            <div class="mt-6 pt-5 border-t border-gray-100 text-center md:text-right">
+                <p class="text-sm md:text-base text-gray-600 font-medium leading-relaxed">
+                    مرحباً بكم في الاستبيان الإلكتروني . <strong-class="text-primary">رأيك يهمنا ويساعدنا على تحسين خدماتنا - "يسعدنا جداً سماع رأيك لنقدم لك تجربة أفضل! شاركنا أفكارك بكل عفوية وصراحة، ومعلوماتك في أمان وسرية تامة.".</strong>
+                </p>
+            </div>
+        </header>
+
+        <!-- WIZARD PROGRESS CARD -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
+            <!-- Progress Status Bar -->
+            <div class="flex justify-between text-xs md:text-sm font-bold text-primary mb-3">
+                <span id="step-title-display">الخطوة 1 من 4: البيانات الأساسية</span>
+                <span id="progress-percentage">25%</span>
+            </div>
+            <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
+                <div id="progress-bar-fill" class="bg-gradient-to-r from-secondary to-primary h-full transition-all duration-500 rounded-full" style="width: 25%;"></div>
+            </div>
+
+            <!-- Steps bullets -->
+            <div class="grid grid-cols-4 gap-2 mt-4 text-center">
+                <div class="step-bullet text-[11px] md:text-xs font-bold text-primary py-1 border-b-2 border-primary" id="bullet-1">البيانات الأساسية</div>
+                <div class="step-bullet text-[11px] md:text-xs font-bold text-gray-400 py-1 border-b-2 border-gray-200" id="bullet-2">التمريض والعامة</div>
+                <div class="step-bullet text-[11px] md:text-xs font-bold text-gray-400 py-1 border-b-2 border-gray-200" id="bullet-3">الطبية والتغذية</div>
+                <div class="step-bullet text-[11px] md:text-xs font-bold text-gray-400 py-1 border-b-2 border-gray-200" id="bullet-4">الإدارية والتوصيات</div>
+            </div>
+        </div>
+
+        <!-- SURVEY FORM -->
+        <form id="google-survey-form" action="https://docs.google.com/forms/d/e/1FAIpQLSf0_jV_jNwXtSQRtWLZboNTUPUTfAV42yqEwdshHIY-g8-SRA/formResponse" method="POST" target="hidden_iframe" onsubmit="submitForm(event)">
+            
+            <!-- STEP 1: GENERAL DATA -->
+            <div id="step-1" class="step-content active bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <div class="border-b border-gray-100 pb-4 mb-6">
+                    <h3 class="text-lg font-extrabold text-primary flex items-center gap-2">
+                        <i class="fa-solid fa-address-card text-secondary"></i>
+                        البيانات الأساسية
+                    </h3>
+                    <p class="text-xs text-gray-400 mt-1">الرجاء إدخال البيانات المطلوبة لبدء تقييم تجربة المريض</p>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Room Number (رقم الغرفة) -->
+                    <div>
+                        <label for="room_number" class="block text-sm font-bold text-gray-700 mb-2">رقم الغرفة <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400">
+                                <i class="fa-solid fa-door-open"></i>
+                            </span>
+                            <input type="number" id="room_number" name="entry.397062059" required class="w-full pr-11 pl-4 py-3.5 bg-brandLight border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition text-sm font-semibold" placeholder="أدخل رقم الغرفة">
+                        </div>
+                    </div>
+
+                    <!-- Department Selection (القسم) -->
+                    <div>
+                        <label for="department" class="block text-sm font-bold text-gray-700 mb-2">القسم <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400">
+                                <i class="fa-solid fa-hospital-user"></i>
+                            </span>
+                            <select id="department" name="entry.1684585579" required class="w-full pr-11 pl-4 py-3.5 bg-brandLight border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition text-sm font-bold text-gray-700 appearance-none">
+                                <option value="" disabled selected>اختر القسم...</option>
+                                <option value="الباطنة رجال">الباطنة رجال</option>
+                                <option value="الباطنة نساء">الباطنة نساء</option>
+                                <option value="الجراحة رجال">الجراحة رجال</option>
+                                <option value="الجراحة نساء">الجراحة نساء</option>
+                                <option value="الاطفال">الاطفال</option>
+                                <option value="النساء والولادة">النساء والولادة</option>
+                                <option value="العناية المركز حديثي الولادة">العناية المركز حديثي الولادة</option>
+                                <option value="العناية المركزة الاطفال">العناية المركزة الاطفال</option>
+                                <option value="العناية المركزة كبار">العناية المركزة كبار</option>
+                                <option value="العناية المركزة المتوسطة">العناية المركزة المتوسطة</option>
+                            </select>
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Stay Duration (مدة الإقامة بالأيام) -->
+                    <div>
+                        <label for="stay_duration" class="block text-sm font-bold text-gray-700 mb-2">مدة الإقامة (أيام) <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400">
+                                <i class="fa-solid fa-calendar-day"></i>
+                            </span>
+                            <select id="stay_duration" name="entry.2141530017" required class="w-full pr-11 pl-4 py-3.5 bg-brandLight border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition text-sm font-bold text-gray-700 appearance-none">
+                                <option value="" disabled selected>اختر عدد الأيام...</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="أكثر من أسبوع">أكثر من أسبوع</option>
+                            </select>
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Patient Name (اسم المريض) -->
+                    <div>
+                        <label for="patient_name" class="block text-sm font-bold text-gray-700 mb-2">اسم المريض <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                            <input type="text" id="patient_name" name="entry.678357096" required class="w-full pr-11 pl-4 py-3.5 bg-brandLight border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition text-sm font-semibold" placeholder="أدخل اسم المريض">
+                        </div>
+                    </div>
+
+                    <!-- Respondent Type (مقدم الاستبيان) -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">مقدم الاستبيان <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <label class="cursor-pointer relative flex flex-col items-center justify-center p-3 rounded-xl border border-gray-200 bg-brandLight text-center transition hover:bg-sky-50/50">
+                                <input type="radio" name="entry.1074712582" value="المريض" required class="sr-only card-radio" checked>
+                                <span class="card-label absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none"></span>
+                                <i class="fa-solid fa-bed-pulse text-lg mb-1 text-primary"></i>
+                                <span class="text-xs font-bold text-gray-700">المريض</span>
+                            </label>
+
+                            <label class="cursor-pointer relative flex flex-col items-center justify-center p-3 rounded-xl border border-gray-200 bg-brandLight text-center transition hover:bg-sky-50/50">
+                                <input type="radio" name="entry.1074712582" value="ولي الأمر" required class="sr-only card-radio">
+                                <span class="card-label absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none"></span>
+                                <i class="fa-solid fa-users text-lg mb-1 text-primary"></i>
+                                <span class="text-xs font-bold text-gray-700">ولي الأمر</span>
+                            </label>
+
+                            <label class="cursor-pointer relative flex flex-col items-center justify-center p-3 rounded-xl border border-gray-200 bg-brandLight text-center transition hover:bg-sky-50/50">
+                                <input type="radio" name="entry.1074712582" value="مرافق" required class="sr-only card-radio">
+                                <span class="card-label absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none"></span>
+                                <i class="fa-solid fa-user-friends text-lg mb-1 text-primary"></i>
+                                <span class="text-xs font-bold text-gray-700">مرافق</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: NURSING & GENERAL SERVICES -->
+            <div id="step-2" class="step-content bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <!-- Nursing Services Section -->
+                <div class="mb-8">
+                    <div class="border-b border-gray-100 pb-3 mb-5">
+                        <h3 class="text-lg font-extrabold text-primary flex items-center gap-2">
+                            <i class="fa-solid fa-user-nurse text-secondary"></i>
+                            خدمات التمريض <span class="text-red-500">*</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1">يرجى تقييم مستوى أداء الخدمات التمريضية المقدمة</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Q1 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">الاستجابة السريعة لنداء المريض <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.1020783836" id="nurse_q1" required value="">
+                                <button type="button" onclick="setCustomRating('nurse_q1', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('nurse_q1', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">تعامل طاقم التمريض <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.875043876" id="nurse_q2" required value="">
+                                <button type="button" onclick="setCustomRating('nurse_q2', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('nurse_q2', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">شرح الدواء والإجراءات <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.191441784" id="nurse_q3" required value="">
+                                <button type="button" onclick="setCustomRating('nurse_q3', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('nurse_q3', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">المتابعة والحرص على راحتك <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.534628303" id="nurse_q4" required value="">
+                                <button type="button" onclick="setCustomRating('nurse_q4', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('nurse_q4', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- General Services Section -->
+                <div>
+                    <div class="border-b border-gray-100 pb-3 mb-5">
+                        <h3 class="text-lg font-extrabold text-primary flex items-center gap-2">
+                            <i class="fa-solid fa-hospital-alt text-secondary"></i>
+                            الخدمات العامة <span class="text-red-500">*</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1">يرجى تقييم مستوى نظافة وراحة مرافق المستشفى</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Q1 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">نظافة الغرفة والمرافق الصحية <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.1994036943" id="general_q1" required value="">
+                                <button type="button" onclick="setCustomRating('general_q1', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('general_q1', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">الهدوء والراحة داخل الغرفة <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.324879179" id="general_q2" required value="">
+                                <button type="button" onclick="setCustomRating('general_q2', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('general_q2', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">درجة الحرارة والتهوية والإضاءة <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.1063958387" id="general_q3" required value="">
+                                <button type="button" onclick="setCustomRating('general_q3', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('general_q3', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">السلامة (جرس النداء) <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.192836455" id="general_q4" required value="">
+                                <button type="button" onclick="setCustomRating('general_q4', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('general_q4', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: MEDICAL SERVICES & NUTRITION -->
+            <div id="step-3" class="step-content bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <!-- Medical Services Section -->
+                <div class="mb-8">
+                    <div class="border-b border-gray-100 pb-3 mb-5">
+                        <h3 class="text-lg font-extrabold text-primary flex items-center gap-2">
+                            <i class="fa-solid fa-user-doctor text-secondary"></i>
+                            خدمات الطاقم الطبي
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1">يرجى تقييم مستوى أداء الأطباء والمختصين</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Q1 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">انتظام زيارة الفريق الطبي <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.930688870" id="doctor_q1" required value="">
+                                <button type="button" onclick="setCustomRating('doctor_q1', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('doctor_q1', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">وضوح شرح التشخيص والعلاج <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.445577873" id="doctor_q2" required value="">
+                                <button type="button" onclick="setCustomRating('doctor_q2', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('doctor_q2', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">الاستجابة لاستفساراتك <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.1783224918" id="doctor_q3" required value="">
+                                <button type="button" onclick="setCustomRating('doctor_q3', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('doctor_q3', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">الاهتمام والتعامل باحترافية <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.1782454810" id="doctor_q4" required value="">
+                                <button type="button" onclick="setCustomRating('doctor_q4', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('doctor_q4', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nutrition Services Section -->
+                <div>
+                    <div class="border-b border-gray-100 pb-3 mb-5">
+                        <h3 class="text-lg font-extrabold text-primary flex items-center gap-2">
+                            <i class="fa-solid fa-utensils text-secondary"></i>
+                            خدمات التغذية <span class="text-red-500">*</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1">يرجى تقييم مستوى جودة ونظافة تقديم الوجبات الغذائية</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Q1 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">جودة الوجبات وتنوعها <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.209155153" id="food_q1" required value="">
+                                <button type="button" onclick="setCustomRating('food_q1', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('food_q1', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">مواعيد تقديم الطعام <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.1119058587" id="food_q2" required value="">
+                                <button type="button" onclick="setCustomRating('food_q2', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('food_q2', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">نظافة أدوات الطعام <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.460878673" id="food_q3" required value="">
+                                <button type="button" onclick="setCustomRating('food_q3', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('food_q3', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">درجة حرارة الطعام المقدم <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.963560932" id="food_q4" required value="">
+                                <button type="button" onclick="setCustomRating('food_q4', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('food_q4', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: ADMINISTRATIVE PROCEDURES & OVERALL EVALUATION -->
+            <div id="step-4" class="step-content bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <!-- Admin Procedures Section -->
+                <div class="mb-8">
+                    <div class="border-b border-gray-100 pb-3 mb-5">
+                        <h3 class="text-lg font-extrabold text-primary flex items-center gap-2">
+                            <i class="fa-solid fa-paste text-secondary"></i>
+                            الخدمات الإدارية وإجراءات الدخول والخروج <span class="text-red-500">*</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1">يرجى تقييم أداء الاستقبال والتوجيه والتعاملات الإدارية</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Q1 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">سرعة ووضوح إجراءات الدخول والخروج <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.558340460" id="admin_q1" required value="">
+                                <button type="button" onclick="setCustomRating('admin_q1', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('admin_q1', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">تعامل موظفي الاستقبال <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.822806822" id="admin_q2" required value="">
+                                <button type="button" onclick="setCustomRating('admin_q2', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('admin_q2', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">التوجيه داخل المستشفى <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.1491216588" id="admin_q3" required value="">
+                                <button type="button" onclick="setCustomRating('admin_q3', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('admin_q3', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="bg-brandLight p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span class="text-sm font-bold text-gray-800">سرعة الاستجابة للشكاوى والطلبات <span class="text-red-500">*</span></span>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <input type="hidden" name="entry.63015918" id="admin_q4" required value="">
+                                <button type="button" onclick="setCustomRating('admin_q4', 'راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-green-50/50 transition duration-300">
+                                    <i class="fa-solid fa-smile text-lg"></i> راضي
+                                </button>
+                                <button type="button" onclick="setCustomRating('admin_q4', 'غير راضي', this)" class="rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 hover:bg-red-50/50 transition duration-300">
+                                    <i class="fa-solid fa-frown text-lg"></i> غير راضي
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Recommendation & Evaluation -->
+                <div>
+                    <div class="border-b border-gray-100 pb-3 mb-5">
+                        <h3 class="text-lg font-extrabold text-primary flex items-center gap-2">
+                            <i class="fa-solid fa-star-half-stroke text-secondary"></i>
+                            التوصيات والتقييم الختامي
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1">الرأي العام والمقترحات الختامية لتحسين الخدمات</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Recommendation Question -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-3">هل توصي باختيار المستشفى لعائلتك وأصدقائك ؟ <span class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <label class="cursor-pointer relative flex flex-col items-center justify-center p-3 rounded-xl border border-gray-200 bg-brandLight text-center transition hover:bg-sky-50/50">
+                                    <input type="radio" name="entry.1349150801" value="نعم" required class="sr-only card-radio">
+                                    <span class="card-label absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none"></span>
+                                    <i class="fa-solid fa-circle-check text-lg mb-1 text-green-600"></i>
+                                    <span class="text-xs font-bold text-gray-700">نعم</span>
+                                </label>
+
+                                <label class="cursor-pointer relative flex flex-col items-center justify-center p-3 rounded-xl border border-gray-200 bg-brandLight text-center transition hover:bg-sky-50/50">
+                                    <input type="radio" name="entry.1349150801" value="ربما" required class="sr-only card-radio">
+                                    <span class="card-label absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none"></span>
+                                    <i class="fa-solid fa-circle-question text-lg mb-1 text-amber-500"></i>
+                                    <span class="text-xs font-bold text-gray-700">ربما</span>
+                                </label>
+
+                                <label class="cursor-pointer relative flex flex-col items-center justify-center p-3 rounded-xl border border-gray-200 bg-brandLight text-center transition hover:bg-sky-50/50">
+                                    <input type="radio" name="entry.1349150801" value="لا" required class="sr-only card-radio">
+                                    <span class="card-label absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none"></span>
+                                    <i class="fa-solid fa-circle-xmark text-lg mb-1 text-red-500"></i>
+                                    <span class="text-xs font-bold text-gray-700">لا</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Overall Quality Rating -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-3">تقييمك العام لتجربتك في المستشفى: <span class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-5 gap-2">
+                                <label class="cursor-pointer relative flex flex-col items-center justify-center py-3.5 px-2 rounded-xl border border-gray-200 bg-brandLight text-center transition hover:bg-sky-50/50">
+                                    <input type="radio" name="entry.923785009" value="ممتاز" required class="sr-only card-radio">
+                                    <span class="card-label absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none"></span>
+                                    <span class="text-xl mb-1">😍</span>
+                                    <span class="text-[10px] md:text-xs font-bold text-gray-700">ممتاز</span>
+                                </label>
+
+                                <label class="cursor-pointer relative flex flex-col items-center justify-center py-3.5 px-2 rounded-xl border border-gray-200 bg-brandLight text-center transition hover:bg-sky-50/50">
+                                    <input type="radio" name="entry.923785009" value="جيد جداً" required class="sr-only card-radio">
+                                    <span class="card-label absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none"></span>
+                                    <span class="text-xl mb-1">😊</span>
+                                    <span class="text-[10px] md:text-xs font-bold text-gray-700">جيد جداً</span>
+                                </label>
+
+                                <label class="cursor-pointer relative flex flex-col items-center justify-center py-3.5 px-2 rounded-xl border border-gray-200 bg-brandLight text-center transition hover:bg-sky-50/50">
+                                    <input type="radio" name="entry.923785009" value="جيد" required class="sr-only card-radio">
+                                    <span class="card-label absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none"></span>
+                                    <span class="text-xl mb-1">🙂</span>
+                                    <span class="text-[10px] md:text-xs font-bold text-gray-700">جيد</span>
+                                </label>
+
+                                <label class="cursor-pointer relative flex flex-col items-center justify-center py-3.5 px-2 rounded-xl border border-gray-200 bg-brandLight text-center transition hover:bg-sky-50/50">
+                                    <input type="radio" name="entry.923785009" value="مقبول" required class="sr-only card-radio">
+                                    <span class="card-label absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none"></span>
+                                    <span class="text-xl mb-1">😐</span>
+                                    <span class="text-[10px] md:text-xs font-bold text-gray-700">مقبول</span>
+                                </label>
+
+                                <label class="cursor-pointer relative flex flex-col items-center justify-center py-3.5 px-2 rounded-xl border border-gray-200 bg-brandLight text-center transition hover:bg-sky-50/50">
+                                    <input type="radio" name="entry.923785009" value="ضعيف" required class="sr-only card-radio">
+                                    <span class="card-label absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none"></span>
+                                    <span class="text-xl mb-1">🙁</span>
+                                    <span class="text-[10px] md:text-xs font-bold text-gray-700">ضعيف</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Suggestions Text Area -->
+                        <div>
+                            <label for="suggestions" class="block text-sm font-bold text-gray-700 mb-2">إجابتك (ملاحظات أو مقترحات إضافية)</label>
+                            <div class="relative">
+                                <span class="absolute top-4 right-4 text-gray-400">
+                                    <i class="fa-solid fa-comment-dots"></i>
+                                </span>
+                                <textarea id="suggestions" name="entry.1890621684" rows="3" class="w-full pr-11 pl-4 py-3 bg-brandLight border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition text-sm font-semibold" placeholder="اكتب مقترحاتك أو ملاحظاتك هنا..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NAVIGATION BUTTONS CONTROL -->
+            <div class="mt-6 flex justify-between items-center gap-4">
+                <button type="button" id="prev-btn" onclick="prevStep()" class="hidden bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-6 py-3.5 rounded-xl transition flex items-center gap-2">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                    السابق
+                </button>
+                <div class="flex-grow"></div>
+                <button type="button" id="next-btn" onclick="nextStep()" class="w-full sm:w-auto bg-gradient-to-l from-primary to-secondary text-white font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-blue-900/10 hover:shadow-xl hover:shadow-blue-900/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+                    التالي
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                </button>
+                <button type="submit" id="submit-btn" class="hidden w-full sm:w-auto bg-gradient-to-l from-patientGreen to-emerald-600 text-white font-extrabold px-10 py-3.5 rounded-xl shadow-lg shadow-green-900/10 hover:shadow-xl hover:shadow-green-900/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-sm"></i>
+                    إرسال
+                </button>
+            </div>
+        </form>
+
+        <!-- SUCCESS SCREEN PANEL (HIDDEN BY DEFAULT) -->
+        <div id="success-panel" class="hidden bg-white rounded-3xl shadow-xl border border-gray-100 p-8 md:p-12 text-center max-w-lg mx-auto my-12 animate-bounce-short">
+            <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-200 shadow-inner">
+                <i class="fa-solid fa-check-circle text-5xl text-green-500 animate-pulse"></i>
+            </div>
+            <h3 class="text-2xl font-extrabold text-primary mb-3">تم إرسال تقييمك بنجاح!</h3>
+            <p class="text-sm md:text-base text-gray-500 font-semibold leading-relaxed mb-6">
+                نشكرك على مشاركتنا وقتك ورأيك القيّم. <br>
+                تساعدنا إجاباتك على تطوير خدمات الرعاية الصحية بمستشفى شرق جدة للوصول إلى أعلى مستويات الجودة والتميز المعتمدة بوزارة الصحة.
+            </p>
+            <div class="h-[1px] w-full bg-gray-100 my-6"></div>
+            <!-- Patient Experience Dept Signature inside success screen -->
+            <div class="flex justify-center items-center gap-2">
+                <i class="fa-solid fa-heart-pulse text-patientGreen text-lg"></i>
+                <span class="text-xs font-bold text-patientGold">مع تحيات الإدارة التنفيذية لتجربة المريض بمستشفى شرق جدة</span>
+            </div>
+            <button onclick="window.location.reload()" class="mt-8 text-xs font-bold text-secondary bg-brandLight border border-sky-100 px-5 py-2.5 rounded-full hover:bg-sky-100/50 transition">
+                إرسال تقييم جديد <i class="fa-solid fa-rotate-left mr-1"></i>
+            </button>
+        </div>
+
+        <!-- Hidden iframe to prevent redirect on standard form submit backup -->
+        <iframe name="hidden_iframe" id="hidden_iframe" class="hidden" style="display:none;"></iframe>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-primary text-white py-6 mt-12 border-t border-secondary/30">
+        <div class="container mx-auto px-4 max-w-4xl flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-right">
+            <div>
+                <p class="text-xs font-bold text-sky-200">الاستبيان الإلكتروني لقياس تجربة المستفيدين</p>
+                <p class="text-[10px] text-gray-300 mt-1">جميع الحقوق محفوظة لمستشفى شرق جدة</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- LOGIC SCRIPTS -->
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // Custom Error Message Modal generator
+        function showCustomError(message) {
+            // Remove existing toast if any
+            const existing = document.getElementById('custom-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'custom-toast';
+            toast.className = 'fixed top-6 left-1/2 -translate-x-1/2 bg-red-600 text-white text-xs md:text-sm font-bold px-6 py-4 rounded-xl shadow-2xl z-50 flex items-center gap-2 border border-red-500 animate-slide-down';
+            toast.innerHTML = `<i class="fa-solid fa-circle-exclamation text-lg"></i> <span>${message}</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                setTimeout(() => toast.remove(), 500);
+            }, 3500);
+        }
+
+        // Custom Multi-Step Navigation & Progress controller
+        function updateStepUI() {
+            // Hide all steps
+            for (let i = 1; i <= totalSteps; i++) {
+                document.getElementById(`step-${i}`).classList.remove('active');
+                document.getElementById(`bullet-${i}`).className = 'step-bullet text-[11px] md:text-xs font-bold text-gray-400 py-1 border-b-2 border-gray-200';
+            }
+
+            // Show active step
+            document.getElementById(`step-${currentStep}`).classList.add('active');
+            
+            // Highlight bullets
+            for (let i = 1; i <= currentStep; i++) {
+                document.getElementById(`bullet-${i}`).className = 'step-bullet text-[11px] md:text-xs font-bold text-primary py-1 border-b-2 border-primary';
+            }
+
+            // Update Progress Percentage and Title Text
+            const percentages = {1: '25%', 2: '50%', 3: '75%', 4: '100%'};
+            const stepTitles = {
+                1: 'الخطوة 1 من 4: البيانات الأساسية',
+                2: 'الخطوة 2 من 4: تقييم التمريض والخدمات العامة',
+                3: 'الخطوة 3 من 4: تقييم الخدمات الطبية والغذائية',
+                4: 'الخطوة 4 من 4: الخدمات الإدارية والتقييم النهائي'
+            };
+
+            document.getElementById('step-title-display').innerText = stepTitles[currentStep];
+            document.getElementById('progress-percentage').innerText = percentages[currentStep];
+            document.getElementById('progress-bar-fill').style.width = percentages[currentStep];
+
+            // Control Navigation Buttons Visibility
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (currentStep === 1) {
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            } else if (currentStep === totalSteps) {
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+
+            // Scroll to top of form gently
+            window.scrollTo({ top: document.getElementById('google-survey-form').offsetTop - 20, behavior: 'smooth' });
+        }
+
+        // Validate required fields inside the active step card
+        function validateStep(step) {
+            const stepEl = document.getElementById(`step-${step}`);
+            // Check HTML Native validation (required inputs, selects, radios)
+            const requiredFields = stepEl.querySelectorAll('[required]');
+            
+            for (let field of requiredFields) {
+                // If it's a hidden field (rating metrics)
+                if (field.type === 'hidden' && field.value === '') {
+                    // Find the label text or question text
+                    const parentCard = field.closest('.bg-brandLight');
+                    const questionText = parentCard ? parentCard.querySelector('span').innerText : "جميع الأسئلة والتقييمات";
+                    showCustomError(`يرجى تحديد تقييم لـ: "${questionText.replace('*', '').trim()}"`);
+                    return false;
+                }
+                
+                // If it's a text input or select
+                if ((field.tagName === 'INPUT' || field.tagName === 'SELECT') && field.type !== 'radio' && field.type !== 'hidden') {
+                    if (!field.value.trim()) {
+                        field.focus();
+                        field.classList.add('border-red-500', 'bg-red-50/20');
+                        showCustomError("الرجاء إدخال الحقول المطلوبة المميزة باللون الأحمر.");
+                        
+                        // Add reset listener
+                        field.addEventListener('input', function resetError() {
+                            field.classList.remove('border-red-500', 'bg-red-50/20');
+                            field.removeEventListener('input', resetError);
+                        });
+                        return false;
+                    }
+                }
+
+                // If it's a radio group
+                if (field.type === 'radio') {
+                    const radioName = field.name;
+                    const checkedOption = stepEl.querySelector(`input[name="${radioName}"]:checked`);
+                    if (!checkedOption) {
+                        showCustomError("يرجى اختيار أحد الخيارات المطلوبة للمتابعة.");
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function nextStep() {
+            if (validateStep(currentStep)) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateStepUI();
+                }
+            }
+        }
+
+        // Return step transition back handler
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepUI();
+            }
+        }
+
+        // Custom Rating Pill toggle logic
+        function setCustomRating(hiddenInputId, val, buttonEl) {
+            // Set hidden field value
+            const hiddenInput = document.getElementById(hiddenInputId);
+            if (!hiddenInput) return;
+            hiddenInput.value = val;
+
+            // Clear active states of siblings inside parent container
+            const container = buttonEl.parentElement;
+            const buttons = container.querySelectorAll('.rating-pill');
+            buttons.forEach(btn => {
+                btn.className = "rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500 transition duration-300";
+            });
+
+            // Set active color style based on value
+            if (val === 'راضي') {
+                buttonEl.className = "rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 text-xs font-extrabold shadow-sm transition duration-300";
+            } else if (val === 'غير راضي') {
+                buttonEl.className = "rating-pill flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-700 text-xs font-extrabold shadow-sm transition duration-300";
+            }
+        }
+
+        // Form Submit Action Interceptor with AJAX / fetch Mode: No-Cors
+        function submitForm(event) {
+            event.preventDefault(); // Stop standard redirect/reload page flow
+
+            if (!validateStep(currentStep)) return;
+
+            const form = document.getElementById('google-survey-form');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            // Show loading spinner
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-sm"></i> جاري الإرسال...`;
+
+            // Prepare form data submission
+            const formData = new FormData(form);
+
+            // Fetch to Google Forms with no-cors to successfully submit data in the background
+            fetch(form.action, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            })
+            .then(() => {
+                // Post-submission success state
+                form.classList.add('hidden');
+                document.getElementById('success-panel').classList.remove('hidden');
+                document.querySelector('.bg-white.rounded-2xl.shadow-sm.border').classList.add('hidden'); // hide wizard progress
+                
+                // Trigger celebratory confetti
+                startConfetti();
+            })
+            .catch((error) => {
+                console.error("Submission failed: ", error);
+                // Fall back safely even if errors occur due to no-cors environment headers
+                form.classList.add('hidden');
+                document.getElementById('success-panel').classList.remove('hidden');
+                document.querySelector('.bg-white.rounded-2xl.shadow-sm.border').classList.add('hidden');
+                startConfetti();
+            });
+        }
+
+        // --- Custom Canvas Confetti Logic ---
+        function startConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            canvas.classList.remove('hidden');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            const colors = ['#155084', '#1194D2', '#1E7D56', '#B39255', '#3AC0C3'];
+            const confettiCount = 150;
+            const confettiPieces = [];
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            for (let i = 0; i < confettiCount; i++) {
+                confettiPieces.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height - height,
+                    size: Math.random() * 8 + 6,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 3 + 2,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: Math.random() * 4 - 2
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, width, height);
+                confettiPieces.forEach(p => {
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+
+                    p.y += p.speed;
+                    p.rotation += p.rotationSpeed;
+
+                    if (p.y > height) {
+                        p.y = -20;
+                        p.x = Math.random() * width;
+                    }
+                });
+
+                requestAnimationFrame(draw);
+            }
+
+            draw();
+
+            // Stop confetti animation loop gradually after 6 seconds to save system resource
+            setTimeout(() => {
+                canvas.classList.add('opacity-0', 'transition-opacity', 'duration-1000');
+                setTimeout(() => {
+                    canvas.classList.add('hidden');
+                }, 1000);
+            }, 6000);
+        }
+    </script>
+
+</body>
+</html>
